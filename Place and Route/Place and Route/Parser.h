@@ -6,48 +6,40 @@
 #include "Tokenizer.h"
 
 namespace parser
-{ 
+{
 
+enum class LogicGateType
+{
+	And = 0,
+	Nand = 1,
+	Or = 2,
+	Nor = 3,
+	Xor = 4,
+	Xnor = 5,
+	Not = 6
+};
+
+using LogicGatesMap = std::map<std::string, LogicGateType>;
+using LogicGatesNamesMap = std::map<std::string, uint8_t>;
 using FileManagerPtr = std::weak_ptr<filemanager::FileManager>;
 using TokenizerPtr = std::shared_ptr<tokenizer::Tokenizer>;
 
-class Parser final
+class Parser
 {
 public:
 	explicit Parser(const FileManagerPtr& fileManager);
 
 	void Start();
+	std::vector<std::string>::iterator Check(std::vector<std::string>&& file);
 
-	enum class Operators
-	{
-		And = 0,
-		Nand = 1,
-		Or = 2,
-		Nor = 3,
-		Xor = 4,
-		Xnor = 5,
-		Not = 6
-	};
-
-	struct OperatorsMap : std::map<std::string, Operators>
-	{
-		OperatorsMap()
-		{
-			this->operator[]("and") = Operators::And;
-			this->operator[]("nand") = Operators::Nand;
-			this->operator[]("or") = Operators::Or;
-			this->operator[]("nor") = Operators::Nor;
-			this->operator[]("xor") = Operators::Xor;
-			this->operator[]("xnor") = Operators::Xnor;
-			this->operator[]("not") = Operators::Not;
-		}
-		~OperatorsMap() = default;
-	};
+	void RegisterLogicGates();
 
 private:
 	FileManagerPtr m_fileManager;
 	TokenizerPtr m_tokenizer;
-	OperatorsMap m_operatorsMap;
+
+	LogicGatesMap m_logicGatesMap;
+	LogicGatesNamesMap m_logicGatesNamesMap;
 };
 
 } // namespace parser

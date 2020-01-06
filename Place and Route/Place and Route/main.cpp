@@ -5,6 +5,7 @@
 #include "Parser.h"
 
 int main()
+try
 {
 	using ExecutionManagerPtr = std::unique_ptr<executionmanager::ExecutionManager>;
 
@@ -12,4 +13,9 @@ int main()
 	executionManager->Start();
 
 	return 0;
+}
+catch (const std::exception & e)
+{
+	std::cout << e.what() << std::endl;
+	system("pause");
 }

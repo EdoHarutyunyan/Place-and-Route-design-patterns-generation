@@ -4,7 +4,7 @@
 namespace tokenizer
 {
 
-std::vector<std::string> Tokenizer::split(std::string&& line)
+std::vector<std::string> Tokenizer::Tokenize(std::string&& line)
 {
 	std::vector<std::string> tokens;
 	std::stringstream stream(line);
@@ -14,11 +14,16 @@ std::vector<std::string> Tokenizer::split(std::string&& line)
 	{
 		if (!item.empty())
 		{
-			if (item.back() == ',' || item.back() == ')')
+			if (item.back() == ',' || item.back() == ';')
 			{
 				item.pop_back();
+
+				if (item.back() == ')')
+				{
+					item.pop_back();
+				}
 			}
-			else if (item.front() == '(')
+			if (item.front() == '(')
 			{
 				item = item.substr(1, item.size());
 			}

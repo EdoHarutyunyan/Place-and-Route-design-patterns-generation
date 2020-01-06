@@ -7,7 +7,7 @@
 namespace filemanager
 {
 
-class FileManager final
+class FileManager 
 {
 public:
 	explicit FileManager(const std::string& path);

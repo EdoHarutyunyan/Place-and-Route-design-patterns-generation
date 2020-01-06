@@ -26,6 +26,7 @@
     <ClCompile Include="Tokenizer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="decl.h" />
     <ClInclude Include="ExecutionManager.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="Parser.h" />

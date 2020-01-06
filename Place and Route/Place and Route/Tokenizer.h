@@ -6,13 +6,13 @@
 namespace tokenizer
 {
 
-class Tokenizer
+class Tokenizer 
 {
 public:
 	Tokenizer() = default;
 	~Tokenizer() = default;
 
-	std::vector<std::string> split(std::string&& line);
+	std::vector<std::string> Tokenize(std::string&& line);
 };
 
 } // namespace tokenizer 
