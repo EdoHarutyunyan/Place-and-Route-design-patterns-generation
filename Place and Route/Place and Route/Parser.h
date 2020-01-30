@@ -19,17 +19,18 @@ enum class LogicGateType
 	Not = 6
 };
 
-using LogicGatesMap = std::map<std::string, LogicGateType>;
-using LogicGatesNamesMap = std::map<std::string, uint8_t>;
+using LogicGatesMap = std::map<std::string /*name*/, LogicGateType /*type*/>;
+using LogicGatesNamesMap = std::map<std::string /*name*/, uint8_t /*line*/>;
 using FileManagerPtr = std::weak_ptr<filemanager::FileManager>;
 using TokenizerPtr = std::shared_ptr<tokenizer::Tokenizer>;
+using AdjacencyMatrix = std::vector<std::vector<bool>>;
 
 class Parser
 {
 public:
 	explicit Parser(const FileManagerPtr& fileManager);
 
-	void Start();
+	AdjacencyMatrix Start();
 	std::vector<std::string>::iterator Check(std::vector<std::string>&& file);
 
 	void RegisterLogicGates();

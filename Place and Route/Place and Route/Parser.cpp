@@ -13,8 +13,10 @@ Parser::Parser(const FileManagerPtr& fileManager)
 	RegisterLogicGates();
 }
 
-void Parser::Start()
+AdjacencyMatrix Parser::Start()
 {
+	AdjacencyMatrix adjacencyMatrix;
+
 	if (auto fileManagerWeak = m_fileManager.lock())
 	{
 		std::vector<std::string> file = fileManagerWeak->ReadFromFile();
@@ -24,8 +26,12 @@ void Parser::Start()
 		uint8_t index = 0u;
 		for (; LogicGatesIt != file.end(); ++LogicGatesIt)
 		{
-
 			std::vector<std::string> tokens = m_tokenizer->Tokenize(std::move(*LogicGatesIt));
+
+			if (tokens.empty())
+			{
+				continue;
+			}
 
 			if (tokens[0] == "endmodule")
 			{
@@ -40,7 +46,6 @@ void Parser::Start()
 			case LogicGateType::Nor:
 			case LogicGateType::Xor:
 			case LogicGateType::Xnor:
-			case LogicGateType::Not:
 			{
 				m_logicGatesNamesMap.insert({ tokens[1], index++ });
 
@@ -50,11 +55,19 @@ void Parser::Start()
 				
 				break;
 			}
+			case LogicGateType::Not:
+			{
+				m_logicGatesNamesMap.insert({ tokens[1], index++ });
+
+				break;
+			}
 			default:
 				assert(false);
 			}
 		}
 	}
+
+	return adjacencyMatrix;
 }
 
 std::vector<std::string>::iterator Parser::Check(std::vector<std::string>&& file)
@@ -138,6 +151,7 @@ std::vector<std::string>::iterator Parser::Check(std::vector<std::string>&& file
 				isFristTime = true;
 				LogicGatesIt = fileIt;
 			}
+
 			auto it = m_logicGatesMap.find(tokens[0]);
 			if (it == m_logicGatesMap.end())
 			{
@@ -156,36 +170,27 @@ std::vector<std::string>::iterator Parser::Check(std::vector<std::string>&& file
 			{
 				assert(tokens.size() > 2);
 
-				auto outIt = std::find(inputArgs.begin(), inputArgs.end(), tokens[2]);
-				auto outIt2 = std::find(outputWires.begin(), outputWires.end(), tokens[2]);
-				auto outIt3 = std::find(wires.begin(), wires.end(), tokens[2]);
+				auto outIt1 = std::find(outputWires.begin(), outputWires.end(), tokens[2]);
+				auto outIt2 = std::find(wires.begin(), wires.end(), tokens[2]);
 
-				if (outIt == inputArgs.end() || outIt2 == outputWires.end())
+				if (outIt1 == outputWires.end() && outIt2 == wires.end())
 				{
-					if (outIt3 == wires.end())
-					{
-						throw std::exception("Undefined variable.");
-					}
+					throw std::exception("Undefined variable.");
 				}
 
 				for (size_t i = 3; i < tokens.size(); ++i)
 				{
-					auto inpIt = std::find(inputArgs.begin(), inputArgs.end(), tokens[i]);
 					auto inpIt1 = std::find(inputWires.begin(), inputWires.end(), tokens[i]);
-					auto inpIt2 = std::find(outputWires.begin(), outputWires.end(), tokens[i]);
-					auto inpIt3 = std::find(wires.begin(), wires.end(), tokens[i]);
+					auto inpIt2 = std::find(wires.begin(), wires.end(), tokens[i]);
 
-					if (inpIt == inputArgs.end() || inpIt1 == inputWires.end())
+					if (inpIt1 == inputWires.end() && inpIt2 == wires.end())
 					{
-						if (inpIt3 == wires.end())
-						{
-							throw std::exception("Undefined variable.");
-						}
+						throw std::exception("Undefined variable.");
 					}
-				}
 
-				tokens.clear();
-				continue;
+					tokens.clear();
+					continue;
+				}
 			}
 			default:
 				assert(false);
